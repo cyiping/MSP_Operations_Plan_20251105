@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: poc-grafana-dashboard
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+data:
+  simple-instance-up.json: |
+    {
+      "annotations": {
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": "-- Grafana --",
+            "enable": true,
+            "hide": true,
+            "iconColor": "#000000",
+            "name": "Annotations & Alerts",
+            "type": "dashboard"
+          }
+        ]
+      },
+      "panels": [
+        {
+          "Datasource": null,
+          "targets": [],
+          "title": "Uptime (up)",
+          "type": "graph",
+          "id": 1
+        }
+      ],
+      "schemaVersion": 16,
+      "version": 0,
+      "title": "Simple Instance Up"
+    }
+
+# 說明：
+# 若使用 kube-prometheus-stack 並啟用了 grafana.sidecar.dashboards.enabled，sidecar 會掃描帶有 label grafana_dashboard=1 的 ConfigMap
+# 使用方式：
+# kubectl apply -f poc/grafana-dashboard-configmap.yaml
+# 確認 grafana sidecar logs 或等待幾秒鐘，然後到 Grafana UI 的 Dashboards -> Manage 查看是否自動出現

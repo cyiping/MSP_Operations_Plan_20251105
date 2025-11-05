@@ -1,0 +1,52 @@
+# values-cloud.yaml
+# 針對 kube-prometheus-stack 的簡易 values for cloud clusters
+
+prometheus:
+  prometheusSpec:
+    retention: 15d
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: "" # 使用 cluster default 或改為 cloud 的 storage class
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 20Gi
+
+alertmanager:
+  alertmanagerSpec:
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: ""
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 5Gi
+
+grafana:
+  enabled: true
+  adminPassword: "ChangeMe123!"
+  service:
+    type: LoadBalancer
+  persistence:
+    enabled: true
+    storageClassName: ""
+    accessModes:
+      - ReadWriteOnce
+    size: 5Gi
+  sidecar:
+    dashboards:
+      enabled: true
+
+kubeStateMetrics:
+  enabled: true
+
+nodeExporter:
+  enabled: true
+
+# 啟用 Grafana sidecar 自動載入 ConfigMap dashboards（若要直接 provision，可放在 chart 的 files/ 中或另外建立 ConfigMap）
+
+# 在 cloud POC 中關閉過多的 RBAC/PSP 覆寫，使用 chart 的預設安全設定
+
+# 自定義 alert rules 可用額外的 ConfigMap 或 PrometheusRule CRD（示例請參考 poc/prometheus-cloud/alert-rules.yaml）

@@ -1,0 +1,18 @@
+# PrometheusRule (PrometheusOperator) sample: instance down (edge)
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: edge-example-alerts
+  namespace: monitoring
+spec:
+  groups:
+  - name: edge
+    rules:
+    - alert: NodeExporterDown
+      expr: up{job="node-exporter"} == 0
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Node exporter down on {{ $labels.instance }}"
+        description: "Node exporter for {{ $labels.instance }} is not reachable."

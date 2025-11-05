@@ -1,0 +1,47 @@
+# values-edge.yaml
+# 簡易 values for edge/on-prem clusters (PoC)
+
+prometheus:
+  prometheusSpec:
+    retention: 7d
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: "" # 若無 storageClass，使用 hostPath（下面以 hostPath 演示）
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi
+
+alertmanager:
+  alertmanagerSpec:
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: ""
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 2Gi
+
+grafana:
+  enabled: true
+  adminPassword: "ChangeMe123!"
+  service:
+    type: NodePort
+    nodePort: 32000
+  persistence:
+    enabled: true
+    # PoC: 使用 hostPath 透過 extraVolumes 與 extraVolumeMounts 注入到 grafana deployment
+    existingClaim: ""
+
+nodeExporter:
+  enabled: true
+
+kubeStateMetrics:
+  enabled: true
+
+# 範例：將 Prometheus server 的 PVC 換成 hostPath（注意：下列 hostPath 只示範，實際請用 local PV provider）
+# 這段示例需要以 kustomize 或直接先建立 PVC/HostPath PV，再在 chart 中引用 PVC 名稱
+
+# 若需要把 edge metrics 發送到 cloud，請在 prometheus.prometheusSpec.remoteWrite 設定 remote_write endpoint。

@@ -1,0 +1,18 @@
+# PrometheusRule (PrometheusOperator) sample: instance down
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: example-alerts
+  namespace: monitoring
+spec:
+  groups:
+  - name: example
+    rules:
+    - alert: InstanceDown
+      expr: up == 0
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "{{ $labels.instance }} down"
+        description: "Instance {{ $labels.instance }} of job {{ $labels.job }} has been down for more than 5 minutes."
