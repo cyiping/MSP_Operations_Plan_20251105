@@ -40,6 +40,9 @@
 - Alertmanager / SNS / PagerDuty：告警路由與班表整合
 - API Gateway + Lambda：處理來自 Meraki Webhooks 的事件並觸發工作流程
 - Secrets Manager / Parameter Store：保存 API Keys、DB 密碼
+- AWS CDK IaC v.s. Terraform：基礎設施即程式碼管理
+
+ 
 
 網路與安全：
 
