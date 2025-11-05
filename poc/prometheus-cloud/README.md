@@ -41,3 +41,24 @@ Grafana 預設帳密（kube-prometheus-stack）：
 
 - 在 production 或長期測試請換用正式的 PV（不是 ephemeral）並妥善設定 retention 與監控的資源限制。
 - 若需跨叢集長期儲存，考慮使用 Thanos / Cortex / Mimir 或遠端 write。
+
+部署自動化（Terraform / GitOps）
+
+1) Terraform（Helm provider）
+
+   - 我們在 `iac/terraform/helm_prometheus_example.tf` 提供一個簡單範例，示範如何透過 Terraform 的 `helm_release` 將 `kube-prometheus-stack` 安裝到 `monitoring` namespace。範例會讀取 `poc/prometheus-cloud/values-cloud.yaml` 作為 chart values。
+
+   - 使用方式（本地測試）：
+
+```bash
+cd iac/terraform
+terraform init
+terraform apply -var="kubeconfig_path=$KUBECONFIG" -auto-approve
+```
+
+   - 注意：不要把密碼或敏感資訊寫進 repo；使用 Vault / SOPS / Terraform Cloud 等方式注入 secrets。
+
+2) GitOps（ArgoCD）
+
+   - 若採用 GitOps，建議把 HelmRelease（或 Helm chart 的 values 與 Application manifest）放到 Git repo，讓 ArgoCD 同步與管理 release lifecycle。
+   - 優點：更容易回滾、審查與綁定分支/環境；缺點：需先做好 secrets 管理（SOPS / SealedSecrets / External Secrets Controller）。

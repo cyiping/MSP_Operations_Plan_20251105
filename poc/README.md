@@ -28,4 +28,5 @@ PoC 目標
 
 4. 檢查 Prometheus / Grafana 是否收到或顯示測試資料。
 
-注意：若要在 AWS 上部署 Lambda，請先建立適當的 IAM role 與 API Gateway，並將程式碼打包上傳。若你只是要在本機測試，請使用 `.env` 並且不要填入任何實際的 AWS 憑證。
+
+Prometheus PoC: see `poc/prometheus-grafana-pocs.md`.

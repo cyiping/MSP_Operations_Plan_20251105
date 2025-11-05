@@ -338,3 +338,39 @@ MSP_Operations_Plan_20251105/
    - 設定 VPC endpoint 與安全組
    
 詳細說明請查看各目錄下的 README。
+
+## Prometheus + Grafana PoC (快速參考)
+
+本專案在 `poc/` 目錄下提供兩套 Prometheus + Grafana 的 PoC：
+
+- 雲端 (cloud): `poc/prometheus-cloud/`，示範在雲端 Kubernetes 使用 LoadBalancer 與 PVC 的部署範例。
+- 地端 (edge): `poc/prometheus-edge/`，示範在無雲端 LB 的環境使用 NodePort 與 hostPath (PoC 用) 的設定。
+
+快速驗證步驟：
+
+1. 依照所選叢集 (`kubeconfig`) 部署：
+
+```bash
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+kubectl create namespace monitoring
+# Cloud 範例
+helm install prometheus prometheus-community/kube-prometheus-stack -n monitoring -f poc/prometheus-cloud/values-cloud.yaml
+# Edge 範例
+helm install prometheus prometheus-community/kube-prometheus-stack -n monitoring -f poc/prometheus-edge/values-edge.yaml
+```
+
+2. 將示例 Grafana dashboard 與 sidecar-provisioning 的 ConfigMap 套用：
+
+```bash
+kubectl apply -f poc/grafana-dashboard-configmap.yaml
+```
+
+3. 使用內建的檢查腳本快速驗證：
+
+```bash
+chmod +x poc/check-prometheus.sh
+poc/check-prometheus.sh monitoring
+```
+
+更多細節請參考：`poc/prometheus-cloud/README.md`、`poc/prometheus-edge/README.md` 與 `poc/prometheus-grafana-pocs.md`。

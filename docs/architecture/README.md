@@ -164,3 +164,5 @@
 3. 長期（6個月+）
    - 全球部署
    - AI/ML 整合
+
+Prometheus PoC: see `poc/prometheus-grafana-pocs.md`.

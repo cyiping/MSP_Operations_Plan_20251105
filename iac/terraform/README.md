@@ -25,3 +25,26 @@
 - eks.tf: EKS 範例（使用官方 module 建議）
 - rds.tf: RDS 範例
 - outputs.tf: 輸出
+
+## Prometheus + Grafana PoC（與 IAC 的關聯）
+
+若要在 infrastructure 層面部署 PoC 中的 Prometheus/Grafana，可參考 `poc/` 內的 values 檔與說明：
+
+- `poc/prometheus-cloud/values-cloud.yaml`：示例 values，可整合至 Terraform 的 Helm release 模組（例如使用 Helm provider / helm_release）。
+- `poc/prometheus-edge/values-edge.yaml`：示例 values（NodePort/hostPath），適用於 on-prem 或 edge 節點。
+
+快速提示：在 Terraform 中可透過 `helm_release` 將 chart部署到 EKS，或先用 Terraform 建立 EKS 與 Storage（PV / StorageClass），再以 CI/CD（如 ArgoCD / Flux）套用 Helm release。
+
+範例：使用 Terraform + Helm provider 部署 Prometheus（示例檔案）：
+
+	- `iac/terraform/helm_prometheus_example.tf`：提供一個最小的 `helm_release` 範例，示範如何把 `kube-prometheus-stack` 部署到 `monitoring` namespace（請先確認 kubeconfig 與 provider 設定）。
+
+使用建議：
+
+- 開發/測試：可直接在本地執行 `terraform init && terraform apply`（需先設定 `kubeconfig`）。
+- 團隊/生產：請把 Helm release 的 values 與敏感資訊（例如 Grafana admin 密碼）移到安全的 secrets 管理方案（Vault/ SOPS / Terraform Cloud secrets），並在 CI pipeline 中以環境變數注入。
+
+GitOps (ArgoCD) 建議：
+
+- 若偏好 GitOps 流程，可以把 HelmRelease 或 kustomize manifests 放在 Git repo，並讓 ArgoCD 同步到叢集。PoC 建議流程：先用 `iac/terraform/helm_prometheus_example.tf` 建立基礎 infra（EKS、StorageClass），再用 ArgoCD 去管理 Chart 的 lifecycle（HelmRelease CRD / Application）。
+

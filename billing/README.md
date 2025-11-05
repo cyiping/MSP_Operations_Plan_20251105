@@ -26,3 +26,26 @@
 - POST /invoices/generate -> 產生發票（將 JSON 寫入 billing/invoices/）
 
 注意：此服務僅為 PoC 範例，生產務請加上認證、權限、輸入驗證與稽核日誌。
+
+## Prometheus + Grafana PoC（相關指引）
+
+本專案在 `poc/` 目錄下包含 Prometheus + Grafana 的 PoC（cloud / edge）以及驗證工具。若要在開發或測試環境觀察帳務服務的指標，可參考下列步驟：
+
+1. 部署監控堆疊（示例）：
+
+```bash
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+kubectl create namespace monitoring
+helm install prometheus prometheus-community/kube-prometheus-stack -n monitoring -f poc/prometheus-cloud/values-cloud.yaml
+```
+
+2. 將示例 Grafana dashboard 與驗證腳本套用：
+
+```bash
+kubectl apply -f poc/grafana-dashboard-configmap.yaml
+chmod +x poc/check-prometheus.sh
+poc/check-prometheus.sh monitoring
+```
+
+詳見 `poc/` 目錄下的 README 檔。

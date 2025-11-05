@@ -22,38 +22,39 @@ X-Meraki-Signature: {signature}
   "deviceSerial": "Q2XX-XXXX-XXXX",
   "deviceName": "Branch-SW01",
   "eventType": "device.down"
-}
+4. 環境變數
+
+```bash
+# API 服務配置
+API_PORT=5000
+API_DEBUG=false
+JWT_SECRET=xxx
+
+# 外部服務
+MERAKI_API_KEY=xxx
+PROMETHEUS_URL=http://localhost:9090
 ```
 
-### 2. 帳務 API
+## 開發與測試
 
-#### 2.1 建立客戶
-
-```http
-POST /customers
-Content-Type: application/json
-
-{
-  "name": "客戶公司",
-  "billingContact": "billing@example.com",
-  "billingCycle": "monthly"
-}
+1. 本地運行：
+```bash
+make api-up
 ```
 
-#### 2.2 建立訂閱
-
-```http
-POST /subscriptions
-Content-Type: application/json
-
-{
-  "customerId": "cust_123",
-  "sku": "MX-L",
-  "quantity": 2,
-  "unitPrice": 100.00
-}
+2. API 測試：
+```bash
+make api-test
 ```
 
+## 注意事項
+
+1. 所有時間使用 UTC
+2. 金額使用 decimal(10,2)
+3. 需實作 idempotency
+4. 關鍵操作需留存審計日誌
+
+Prometheus + Grafana PoC: 請參考 `poc/prometheus-grafana-pocs.md`，或直接查看 `poc/prometheus-cloud/` 與 `poc/prometheus-edge/`。
 ### 3. 監控 API
 
 #### 3.1 裝置狀態
