@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: "SAM template（範例）- 部署 Meraki webhook handler as Lambda.  此範例僅供參考，預設不會在本地自動連到 AWS。"
+
+Globals:
+  Function:
+    Timeout: 10
+    Runtime: python3.11
+
+Resources:
+  MerakiWebhookFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: meraki-webhook-poc
+      Handler: meraki_webhook_lambda.lambda_handler
+      CodeUri: ../poc/
+      Description: "Meraki webhook handler (PoC). Use environment variables to supply external API endpoints and keys."
+      Environment:
+        Variables:
+          # Do NOT put real secrets here in the template. Inject them at deploy time (SAM CLI, CloudFormation parameters, or Secrets Manager).
+          MERAKI_API_URL: "" # e.g. https://api.meraki.com/api/v1
+          MERAKI_API_KEY: "" # set at deploy time or via Secrets Manager
+          PROMETHEUS_PUSHGATEWAY: "" # optional pushgateway URL
+      Events:
+        ApiHook:
+          Type: Api
+          Properties:
+            Path: /webhook
+            Method: post
+
+Outputs:
+  WebhookUrl:
+    Description: "API Gateway endpoint for Meraki webhook (after deployment)"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/webhook"

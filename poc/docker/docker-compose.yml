@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:9.0.0
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+  pushgateway:
+    image: prom/pushgateway:latest
+    ports:
+      - "9091:9091"
+    command: ["--web.listen-address=0.0.0.0:9091"]
